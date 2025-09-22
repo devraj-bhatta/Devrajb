@@ -325,6 +325,7 @@
                             <th>Tier</th>
                             <th>Total Deposit Amount</th>
                             <th>Win/Loss</th>
+                            <th>Inactive Days</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -354,9 +355,6 @@
             const recordCount = document.getElementById('recordCount');
             const notificationArea = document.getElementById('notificationArea');
             
-            // Remove the sample data - textarea will be empty initially
-            // clientDataTextarea.value = '';
-            
             // Extract data function
             function extractData() {
                 const text = clientDataTextarea.value;
@@ -374,7 +372,8 @@
                     mobileNumber: '',
                     tier: '',
                     totalDepositAmount: '',
-                    winLoss: ''
+                    winLoss: '',
+                    inactiveDays: ''
                 };
                 
                 // Extract data based on patterns
@@ -424,6 +423,11 @@
                          line.toLowerCase().includes('winloss')) && i > 0) {
                         data.winLoss = lines[i-1];
                     }
+                    
+                    // Inactive Days - typically appears before "Inactive Days" label
+                    if (line.toLowerCase().includes('inactive days') && i > 0) {
+                        data.inactiveDays = lines[i-1];
+                    }
                 }
                 
                 // Combine first and last name with a space
@@ -462,25 +466,23 @@
                 }
                 
                 // Create cells for each data field
-                Object.values(data).forEach(value => {
+                const fields = ['fullName', 'email', 'mobileNumber', 'tier', 'totalDepositAmount', 'winLoss', 'inactiveDays'];
+                
+                fields.forEach(field => {
                     const cell = document.createElement('td');
-                    cell.textContent = value || '-';
-                    cell.title = value || ''; // Show full text on hover
+                    let value = data[field] || '-';
+                    cell.textContent = value;
+                    cell.title = value; // Show full text on hover
                     
                     // Format mobile number for display (add spaces for readability)
-                    if (value === data.mobileNumber && value && value !== '-') {
-                        // Format as +XX XXX XXX XXXX or similar based on length
+                    if (field === 'mobileNumber' && value && value !== '-') {
+                        // Format as XXX-XXX-XXXX or similar based on length
                         let formattedMobile = value;
-                        if (value.startsWith('+') && value.length > 7) {
-                            // International format: +XX XXX XXX XXXX
-                            const countryCode = value.substring(0, 3);
-                            const rest = value.substring(3).replace(/(\d{3})(\d{3})(\d+)/, '$1 $2 $3');
-                            formattedMobile = countryCode + ' ' + rest;
-                        } else if (value.length === 10) {
+                        if (value.length === 10) {
                             // Standard 10-digit: XXX-XXX-XXXX
                             formattedMobile = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
                         } else if (value.length > 10) {
-                            // Long number without country code: XXX-XXX-XXXX
+                            // Long number: XXX-XXX-XXXX
                             formattedMobile = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
                         }
                         cell.textContent = formattedMobile;
@@ -541,7 +543,8 @@
                         newData.mobileNumber === existingData.mobileNumber &&
                         newData.tier === existingData.tier &&
                         newData.totalDepositAmount === existingData.totalDepositAmount &&
-                        newData.winLoss === existingData.winLoss;
+                        newData.winLoss === existingData.winLoss &&
+                        newData.inactiveDays === existingData.inactiveDays;
                     
                     if (isDuplicate) {
                         // Only mark the new row as duplicate (we'll add the class after this function)
@@ -566,7 +569,7 @@
                     return;
                 }
                 
-                let csvContent = "Full Name,Email,Mobile Number,Tier,Total Deposit Amount,Win/Loss\n";
+                let csvContent = "Full Name,Email,Mobile Number,Tier,Total Deposit Amount,Win/Loss,Inactive Days\n";
                 
                 for (let i = 0; i < rows.length; i++) {
                     const cells = rows[i].getElementsByTagName('td');
