@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Chor</title>
+    <title>Data Chor Tool</title>
     <style>
         * {
             box-sizing: border-box;
@@ -474,18 +474,19 @@
                     cell.textContent = value;
                     cell.title = value; // Show full text on hover
                     
-                    // Format mobile number for display (add spaces for readability)
+                    // Format mobile number for display - FIXED: Show full number
                     if (field === 'mobileNumber' && value && value !== '-') {
-                        // Format as XXX-XXX-XXXX or similar based on length
-                        let formattedMobile = value;
-                        if (value.length === 10) {
-                            // Standard 10-digit: XXX-XXX-XXXX
-                            formattedMobile = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-                        } else if (value.length > 10) {
-                            // Long number: XXX-XXX-XXXX
-                            formattedMobile = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+                        // Remove any non-digit characters except +
+                        let cleaned = value.replace(/[^\d+]/g, '');
+                        
+                        // Format with dashes for readability but show ALL digits
+                        if (cleaned.length >= 10) {
+                            // Format as XXX-XXX-XXXX for the first 10 digits, then append remaining digits
+                            const firstPart = cleaned.substring(0, 10).replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+                            const remaining = cleaned.substring(10);
+                            cleaned = firstPart + (remaining ? remaining : '');
                         }
-                        cell.textContent = formattedMobile;
+                        cell.textContent = cleaned;
                     }
                     
                     row.appendChild(cell);
