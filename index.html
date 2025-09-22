@@ -354,65 +354,8 @@
             const recordCount = document.getElementById('recordCount');
             const notificationArea = document.getElementById('notificationArea');
             
-            // Sample data for demonstration
-            const sampleData = `NERSU KOTESWARARAO Details
-NERSU
-Firstname
-KOTESWARARAO
-Lastname
-+918125845449
-Mobile Number
-Komalsfarmhyd@gmail.com
-Email
-Nanikomal
-Account
--
-Agent Whatsapp Number
-ACTIVE
-Status
-500.5574
-Balance
-0
-Inactive Days
-DIRECT_CUSTOMER
-Promotion Channel
-15-11-24 01:40 AM
-Registration Date
-Coming soon
-VIP
-2000.00
-First Deposit Amount
-15-11-24 11:38 PM
-First Deposit Date
-22-09-25 10:34 PM
-Last Login
-BLUE_TIER
-Tier
-NO
-KYC Verification Status
--
-KYC Verification Date
-Direct_User
-Promotion Type
-279
-Total Deposit Count
-39
-Total Withdrawal Count
-136591.46
-Net Deposit
-1571300.00
-Total Deposit Amount
-1434708.54
-Total Withdrawal Amount
-22-09-25 10:38 PM
-Last Deposit Date
-20417.46
-Withdrawal Charges
--173935.60000000
-Lifetime Winloss`;
-            
-            // Set sample data initially
-            clientDataTextarea.value = sampleData;
+            // Remove the sample data - textarea will be empty initially
+            // clientDataTextarea.value = '';
             
             // Extract data function
             function extractData() {
@@ -738,6 +681,14 @@ Lifetime Winloss`;
             saveExcelBtn.addEventListener('click', saveToExcel);
             copyBtn.addEventListener('click', copyAllData);
             clearBtn.addEventListener('click', clearInput);
+            
+            // NEW: Add Enter key functionality to textarea
+            clientDataTextarea.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault(); // Prevent new line
+                    extractData(); // Trigger extraction
+                }
+            });
         });
     </script>
 </body>
